@@ -1,0 +1,77 @@
+# MH CreationX - Project Context
+
+## 1. Project Overview
+MH CreationX is a comprehensive studio management application, likely for a creative agency or production house. It facilitates project tracking, customer management, financial accounting (expenses, payments), and user administration. It features a "Client Portal" for showcasing projects to clients via secure tokens.
+
+## 2. Technology Stack
+### Frontend
+- **Framework**: React 19 (Vite 6)
+- **Language**: TypeScript
+- **State Management**: Zustand
+- **Styling**: Tailwind CSS (implied by classnames like `text-slate-900`, `bg-white`) + Vanilla CSS
+- **Routing**: React Router DOM (v7, HashRouter)
+- **Animations**: Framer Motion
+- **Icons**: Lucide React
+- **HTTP Client**: Axios
+
+### Backend/API
+- **Language**: PHP (Vanilla, no framework typically visible, class-based structure)
+- **Database**: MySQL 8.0+ (PDO Driver)
+- **Authentication**: JWT (JSON Web Tokens)
+- **Architecture**: RESTful API endpoints serving JSON
+- **Cross-Origin**: CORS enabled (currently permissive `*`)
+
+## 3. Architecture & Data Flow
+- **Client-Server**: The React frontend communicates with the PHP backend via REST API.
+- **Environment**: Configuration is handled via `.env` files (loaded by Vite on frontend and `Config.php` on backend).
+- **Authentication**:
+  - Backend `auth/login.php` verifies credentials against `users` table.
+  - Returns a JWT which the frontend stores (localStorage `mh_auth_token`).
+  - Frontend `services/api.ts` attaches this token to requests via Axios interceptors.
+  - `store.ts` manages auth state (`isAuthenticated`, `currentUser`).
+
+## 4. Key Components
+
+### Frontend
+- **`App.tsx`**: Main entry point. Defines routes wrapped in `AnimatePresence` for page transitions. Implements `AdminRoute` for role-based protection.
+- **`store.ts`**: Central Zustand store. Manages state for `projects`, `customers`, `expenses`, `users`, etc. Contains some logic for data fetching (`loadInitialData`), though some direct service calls exist.
+- **`components/ProjectCard.tsx`**: A complex, highly interactive component for displaying project details. Handles:
+  - Role-based actions (Admin vs Staff).
+  - Status toggling (Paid/Unpaid).
+  - Image galleries/previews using framer-motion.
+  - Payment settlement modal.
+- **Services**: `authService`, `projectService`, `customerService`, `financeService` (encapsulate API calls).
+
+### Backend (`api/`)
+- **`config/Database.php`**: Singleton pattern for PDO connection.
+- **`config/Config.php`**: Loads environment variables from `.env`.
+- **`middleware/CORS.php`**: Handles CORS headers.
+- **Endpoints**: Structured by domain (e.g., `projects/read.php`, `auth/login.php`). They generally:
+  1. Connect to DB.
+  2. Validate JWT (if protected).
+  3. Execute SQL.
+  4. Return JSON.
+
+## 5. Database Schema (Key Tables)
+- **`users`**: Staff/Admin accounts (password hashed).
+- **`customers`**: Client database (types: Director, Local Client, etc.).
+- **`projects`**: Core entity. Links to `customers`. Tracks status, payment (amount, due, method), delivery dates.
+- **`project_images`**: Linking table for project assets/posters.
+- **`expenses`**: Financial tracking.
+- **`audit_logs`**: System activity tracking.
+- **`messages`**: Internal messaging system (simple implementation).
+
+## 6. Features & Business Logic
+- **Project Lifecycle**: pending -> running -> live -> delivered -> final.
+- **Financial**:
+  - Tracks specific payment methods (Cash, bKash, Nagad, etc.).
+  - Calculates "Digital Valuation" (Due amount).
+  - Expenses tracking.
+- **Access Control**:
+  - **Master Admin**: Has "purge" (permanent delete) rights.
+  - **Admin**: Can edit projects, manage users/finance.
+  - **Public**: Can view "visible" projects via the Client Portal (filtered by `is_visible_on_public` flag in `read.php`).
+
+## 7. Dev Environment
+- **Local Dev**: Frontend on port 3000 (Vite), Backend expected on port 8000 (PHP server).
+- **Secrets**: API keys (Gemini) and DB credentials in `.env`.

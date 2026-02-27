@@ -1,0 +1,18 @@
+# Security Rules for Uploads Directory
+# Prevents PHP execution and restricts file types
+
+# Allow only image files
+<FilesMatch "\.(jpg|jpeg|png|gif|webp)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# Deny PHP execution
+<FilesMatch "\.php$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Additional security
+Options -Indexes
+php_flag engine off

@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --z-base: 0;
+        /* Page content */
+        --z-sticky: 100;
+        /* Sticky headers */
+        --z-dropdown: 500;
+        /* Dropdowns, tooltips */
+        --z-modal-backdrop: 1000;
+        /* Modal backdrops */
+        --z-modal: 1100;
+        /* Modal content */
+        --z-toast: 2000;
+        /* Notifications */
+    }
+}
+
+
+@layer utilities {
+
+    /* Z-Index System */
+    .z-base {
+        z-index: var(--z-base);
+    }
+
+    .z-sticky {
+        z-index: var(--z-sticky);
+    }
+
+    .z-dropdown {
+        z-index: var(--z-dropdown);
+    }
+
+    .z-modal-backdrop {
+        z-index: var(--z-modal-backdrop);
+    }
+
+    .z-modal {
+        z-index: var(--z-modal);
+    }
+
+    .z-toast {
+        z-index: var(--z-toast);
+    }
+
+
+    /* Custom Scrollbar */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        @apply bg-slate-100 dark:bg-slate-900 rounded-full;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        @apply bg-slate-300 dark:bg-slate-700 rounded-full;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        @apply bg-slate-400 dark:bg-slate-600;
+    }
+
+    /* Glass effect */
+    .glass {
+        @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl;
+    }
+}
